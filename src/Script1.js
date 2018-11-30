@@ -9,6 +9,7 @@ MainFrame.getElementsByClassName("Sevens"),MainFrame.getElementsByClassName("Eig
 ];
 
 var SelectedTile = null;
+var OldI, OldJ = null;
 var SelectedPiece = null;
 
 function SetOriginalColor(){
@@ -34,17 +35,108 @@ function ClickMe(i,j){
         if (SelectedTile !== Tiles[i][j]){  // Different tile pressed
 
             if (Tiles[i][j].firstChild === null) { // Tile Empty
-                Tiles[i][j].appendChild(SelectedPiece);
+
+                if (SelectedPiece.className == "Red"){    // Red Moving
+                    Move(true,i,j);
+                }    
+
+                if (SelectedPiece.className == "White"){    // White Moving
+                    Move(false,i,j);
+                }
             }  
         }
 
         SelectedTile = null;
+        OldI = null;
+        OldJ = null;
         SelectedPiece = null;
 
     }else if(Tiles[i][j].firstChild !== null){  //First time pressing
         SelectedTile = Tiles[i][j];
+        OldI = i;
+        OldJ = j;
         SelectedPiece = SelectedTile.firstChild;
         SelectMe();
     }
+}
+function Move(Red, i, j){
+    if(Red){
+
+        if (IsDiagonal(Red,i,j)){ //Unpromoted Red Movement
+            Tiles[i][j].appendChild(SelectedPiece);
+
+            if (i === 0) {  //Red piece promotion
+                SelectedPiece.src = "../Icons/RedK.png";
+            }
+        }
+    }else{
+        if (IsDiagonal(Red, i, j)){  //Unpromoted White Movement
+            Tiles[i][j].appendChild(SelectedPiece);
+
+            if (i === 7) {  //White piece promotion
+                SelectedPiece.src = "../Icons/WhiteK.png";
+            }
+        }
+    }
+}
+function IsDiagonal(Red, i, j) {
     
+    if(Red){ //Red Diagonal
+
+        if((i === OldI - 1 && j === OldJ + 1) ||(i === OldI - 1 && j === OldJ - 1)){    //Unpromoted Red Movement
+            return true;
+        }
+
+        if (i === OldI - 2 && j === OldJ + 2){  //Unpromoted Red Eat
+
+            if(Tiles[OldI - 1][OldJ + 1].firstChild !== null){
+
+                if(SelectedPiece.className !== Tiles[OldI - 1][OldJ + 1].firstChild.className){
+                    Tiles[OldI - 1][OldJ + 1].removeChild(Tiles[OldI - 1][OldJ + 1].firstChild);
+                    return true;
+                }
+            }
+        }
+
+        if (i === OldI - 2 && j === OldJ - 2){  //Unpromoted Red Eat
+
+            if(Tiles[OldI - 1][OldJ - 1].firstChild !== null){
+
+                if(SelectedPiece.className !== Tiles[OldI - 1][OldJ -1].firstChild.className){
+                    Tiles[OldI - 1][OldJ - 1].removeChild(Tiles[OldI - 1][OldJ - 1].firstChild);
+                    return true;
+                }
+            }
+        }
+    }
+
+    if(!Red){  //White Diagonal
+        if((i === OldI + 1 && j === OldJ - 1) ||(i === OldI + 1 && j === OldJ + 1)){    //Unpromoted White Movement
+            return true;
+        }
+
+        if (i === OldI + 2 && j === OldJ + 2){  //Unpromoted White Eat
+
+            if(Tiles[OldI + 1][OldJ + 1].firstChild !== null){
+
+                if(SelectedPiece.className !== Tiles[OldI + 1][OldJ + 1].firstChild.className){
+                    Tiles[OldI + 1][OldJ + 1].removeChild(Tiles[OldI + 1][OldJ + 1].firstChild);
+                    return true;
+                }
+            }
+        }
+
+        if (i === OldI + 2 && j === OldJ - 2){  //Unpromoted White Eat
+
+            if(Tiles[OldI + 1][OldJ - 1].firstChild !== null){
+
+                if(SelectedPiece.className !== Tiles[OldI + 1][OldJ - 1].firstChild.className){
+                    Tiles[OldI + 1][OldJ - 1].removeChild(Tiles[OldI + 1][OldJ - 1].firstChild);
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
 }
