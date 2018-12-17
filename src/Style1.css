@@ -7,18 +7,24 @@ th{
 }
 th.WhiteTile{
     background-color: #eacead;
-    alt: "whiteTile";
+    alt: "WhiteTile";
+}
+th.WhiteTile:hover{
+    filter: brightness(70%);
 }
 th.BlackTile{
     background-color: #442909;
     alt: "BlackTile";
 }
-table{
-    border-collapse: collapse;
-    width:75%;
-    margin: auto;
+th.BlackTile:hover{
+    filter: brightness(130%);
 }
 img{
     width: 55%;
     height: 75%;
+}
+table{
+    border-collapse: collapse;
+    width:75%;
+    margin: auto;
 }

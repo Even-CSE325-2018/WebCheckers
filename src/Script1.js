@@ -12,6 +12,12 @@ var SelectedTile = null;
 var OldI, OldJ = null;
 var SelectedPiece = null;
 
+for (let index = 0, len = RedPieces.length; index < len; index++) {     //Cursor over a piece
+    WhitePieces[index].style.cursor = "pointer";
+    RedPieces[index].style.cursor = "pointer";
+    
+}
+
 function SetOriginalColor(){
     SelectedTile.style.backgroundColor = OriginalColor(SelectedTile.className.substr(0,5));
     SelectedTile.style.borderColor = "Black";
@@ -79,9 +85,14 @@ function Move(Red, i, j){
         }
     }
 }
+
 function IsDiagonal(Red, i, j) {
+    let Crowned = false;
+    if(SelectedPiece.src.substr(-5,1) === 'K'){ //Piece is Crowned
+        Crowned = true;
+    }
     
-    if(Red){ //Red Diagonal
+    if(Red || Crowned){ //Red Diagonal
 
         if((i === OldI - 1 && j === OldJ + 1) ||(i === OldI - 1 && j === OldJ - 1)){    //Unpromoted Red Movement
             return true;
@@ -110,7 +121,7 @@ function IsDiagonal(Red, i, j) {
         }
     }
 
-    if(!Red){  //White Diagonal
+    if((!Red) || Crowned){  //White Diagonal
         if((i === OldI + 1 && j === OldJ - 1) ||(i === OldI + 1 && j === OldJ + 1)){    //Unpromoted White Movement
             return true;
         }
