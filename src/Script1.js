@@ -11,6 +11,7 @@ MainFrame.getElementsByClassName("Sevens"),MainFrame.getElementsByClassName("Eig
 var SelectedTile = null;
 var OldI, OldJ = null;
 var SelectedPiece = null;
+var Player = 1; //Change later
 
 for (let index = 0, len = RedPieces.length; index < len; index++) {     //Cursor over a piece
     WhitePieces[index].style.cursor = "pointer";
@@ -49,7 +50,7 @@ function ClickMe(i,j){
                 if (SelectedPiece.className == "White"){    // White Moving
                     Move(false,i,j);
                 }
-            }  
+            }
         }
 
         SelectedTile = null;
@@ -58,47 +59,56 @@ function ClickMe(i,j){
         SelectedPiece = null;
 
     }else if(Tiles[i][j].firstChild !== null){  //First time pressing
+
+        let PieceColor = Tiles[i][j].firstChild.className;
+        if ((PieceColor == "Red" && Player == 1) || (PieceColor == "White" && Player == 2)) {
+
         SelectedTile = Tiles[i][j];
         OldI = i;
         OldJ = j;
         SelectedPiece = SelectedTile.firstChild;
         SelectMe();
+        }
     }
 }
-function Move(Red, i, j){
-    if(Red){
 
-        if (IsDiagonal(Red,i,j)){ //Unpromoted Red Movement
-            Tiles[i][j].appendChild(SelectedPiece);
-
-            if (i === 0) {  //Red piece promotion
-                SelectedPiece.src = "../Icons/RedK.png";
-            }
-        }
+function SwapPlayers() {
+    if (Player == 1) {
+        Player = 2;
     }else{
-        if (IsDiagonal(Red, i, j)){  //Unpromoted White Movement
-            Tiles[i][j].appendChild(SelectedPiece);
+        Player = 1;
+    }
+}
 
-            if (i === 7) {  //White piece promotion
-                SelectedPiece.src = "../Icons/WhiteK.png";
-            }
+function Move(Red, i, j){
+
+    if (IsDiagonal(Red, i, j)){ //Check  Movement
+
+        Tiles[i][j].appendChild(SelectedPiece);
+        SwapPlayers();
+
+        if(Red && i == 0){  //Crown Red Piece
+
+            SelectedPiece.src = "../Icons/RedK.png";
+            SelectedPiece.Crowned = true;
+            
+        }else if(!Red && i == 7){   //Crown White Piece
+
+            SelectedPiece.src = "../Icons/WhiteK.png";
+            SelectedPiece.Crowned = true;
         }
     }
 }
 
 function IsDiagonal(Red, i, j) {
-    let Crowned = false;
-    if(SelectedPiece.src.substr(-5,1) === 'K'){ //Piece is Crowned
-        Crowned = true;
-    }
     
-    if(Red || Crowned){ //Red Diagonal
+    if(Red || SelectedPiece.Crowned){ //Red Diagonal
 
         if((i === OldI - 1 && j === OldJ + 1) ||(i === OldI - 1 && j === OldJ - 1)){    //Unpromoted Red Movement
             return true;
         }
 
-        if (i === OldI - 2 && j === OldJ + 2){  //Unpromoted Red Eat
+        else if (i === OldI - 2 && j === OldJ + 2){  //Unpromoted Red Eat
 
             if(Tiles[OldI - 1][OldJ + 1].firstChild !== null){
 
@@ -109,7 +119,7 @@ function IsDiagonal(Red, i, j) {
             }
         }
 
-        if (i === OldI - 2 && j === OldJ - 2){  //Unpromoted Red Eat
+        else if (i === OldI - 2 && j === OldJ - 2){  //Unpromoted Red Eat
 
             if(Tiles[OldI - 1][OldJ - 1].firstChild !== null){
 
@@ -121,12 +131,12 @@ function IsDiagonal(Red, i, j) {
         }
     }
 
-    if((!Red) || Crowned){  //White Diagonal
+    if((!Red) || SelectedPiece.Crowned){  //White Diagonal
         if((i === OldI + 1 && j === OldJ - 1) ||(i === OldI + 1 && j === OldJ + 1)){    //Unpromoted White Movement
             return true;
         }
 
-        if (i === OldI + 2 && j === OldJ + 2){  //Unpromoted White Eat
+        else if (i === OldI + 2 && j === OldJ + 2){  //Unpromoted White Eat
 
             if(Tiles[OldI + 1][OldJ + 1].firstChild !== null){
 
@@ -137,7 +147,7 @@ function IsDiagonal(Red, i, j) {
             }
         }
 
-        if (i === OldI + 2 && j === OldJ - 2){  //Unpromoted White Eat
+        else if (i === OldI + 2 && j === OldJ - 2){  //Unpromoted White Eat
 
             if(Tiles[OldI + 1][OldJ - 1].firstChild !== null){
 
