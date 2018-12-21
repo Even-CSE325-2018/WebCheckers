@@ -11,7 +11,7 @@ MainFrame.getElementsByClassName("Sevens"),MainFrame.getElementsByClassName("Eig
 var SelectedTile = null;
 var OldI, OldJ = null;
 var SelectedPiece = null;
-var Player = 1; //Change later
+var Player = 1;
 
 
 for (let index = 0, len = RedPieces.length; index < len; index++) {     //Cursor over a piece
@@ -62,7 +62,7 @@ function ClickMe(i,j){
     }else if(Tiles[i][j].firstChild !== null){  //First time pressing
 
         let PieceColor = Tiles[i][j].firstChild.className;
-        if ((PieceColor == "Red" && Player == 1) || (PieceColor == "White" && Player == 2)) {
+        if ((PieceColor == "Red" && Player == 1) || (PieceColor == "White" && Player == 2)) {   //check for turn
 
         SelectedTile = Tiles[i][j];
         OldI = i;
@@ -73,10 +73,10 @@ function ClickMe(i,j){
     }
 }
 
-function Move(Red, OldI, OldJ, i, j){
+function Move(Red, OldI, OldJ, i, j){   //handles movement
 
-    if(CanEat(Red, OldI, OldJ)){
-        if(EatThis(Red, i, j, OldI, OldJ)){
+    if(CanEat(Red, OldI, OldJ)){    //checks if piece can capture
+        if(EatThis(Red, i, j, OldI, OldJ)){ //captures
             Tiles[i][j].appendChild(SelectedPiece);
             if(Red && i == 7){    //Crown Red Piece
                 SelectedPiece.src = "../Icons/RedK.png";
@@ -92,7 +92,8 @@ function Move(Red, OldI, OldJ, i, j){
             }
         }
     }
-    if (IsDiagonal(Red, OldI, OldJ, i, j)){ //Check  Movement
+
+    if (IsDiagonal(Red, OldI, OldJ, i, j)){     //Check non-capturing Movement
         Tiles[i][j].appendChild(SelectedPiece);
         if(Red && i == 7){    //Crown Red Piece
             SelectedPiece.src = "../Icons/RedK.png";
@@ -107,24 +108,23 @@ function Move(Red, OldI, OldJ, i, j){
     }
 }
 
-function IsDiagonal(Red, OldI, OldJ, i, j) {
+function IsDiagonal(Red, OldI, OldJ, i, j) {    //handle non-capturing Movement
     if(!Red || SelectedPiece.Crowned){ //White Diagonal
 
-        if((i === OldI - 1 && j === OldJ + 1) ||(i === OldI - 1 && j === OldJ - 1)){    //Unpromoted White Movement
+        if((i === OldI - 1 && j === OldJ + 1) ||(i === OldI - 1 && j === OldJ - 1)){
             return true;
         }
     }
 
     else if(Red || SelectedPiece.Crowned){  //Red Diagonal
-        if ((i === OldI + 1 && j === OldJ - 1) ||(i === OldI + 1 && j === OldJ + 1)){    //Unpromoted Red Movement
+        if ((i === OldI + 1 && j === OldJ - 1) ||(i === OldI + 1 && j === OldJ + 1)){
             return true;
         }
     }
-
     return false;
 }
 
-function CanEat(Red, i, j) {
+function CanEat(Red, i, j) {    //check if piece can capture
     if(!Red || Tiles[i][j].firstChild.Crowned){ //White Diagonal
         try {
             if(Tiles[i - 1][j + 1].firstChild !== null){    //Unpromoted White Eat
@@ -176,7 +176,7 @@ function CanEat(Red, i, j) {
     }
     return false;
 }
-function EatThis(Red, i, j, OldI, OldJ) {
+function EatThis(Red, i, j, OldI, OldJ) {   //capture pieces
     if(!Red || SelectedPiece.Crowned){ //White Diagonal
         if (i === OldI - 2 && j === OldJ + 2){  //Unpromoted White Eat
 
@@ -226,7 +226,7 @@ function EatThis(Red, i, j, OldI, OldJ) {
     }
 }
 
-function EndGame(Player) {
+function EndGame(Player) {  //check for a winner
     let MyPieces = WhitePieces;
     let Winner = "White";
     if (Player == 1) {
