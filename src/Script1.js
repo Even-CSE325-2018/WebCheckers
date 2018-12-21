@@ -76,9 +76,13 @@ function ClickMe(i,j){
 
 function Move(Red, OldI, OldJ, i, j){
 
-    if(EatThis(Red, i, j, OldI, OldJ)){
-        Tiles[i][j].appendChild(SelectedPiece);
-        EatingPiece = SelectedPiece;
+    if(CanEat(Red, OldI, OldJ)){
+        if(EatThis(Red, i, j, OldI, OldJ)){
+            Tiles[i][j].appendChild(SelectedPiece);
+            if(!CanEat(Red, i, j)){
+                SwapPlayers();
+            }
+        }
     }
     else{
         if (IsDiagonal(Red, OldI, OldJ, i, j)){ //Check  Movement
@@ -97,6 +101,7 @@ function Move(Red, OldI, OldJ, i, j){
                 }
             }
         }
+        SwapPlayers();
     }
 }
 
