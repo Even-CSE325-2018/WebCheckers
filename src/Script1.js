@@ -31,8 +31,8 @@ function SelectMe(){    //Highlight selected tile
 
 function OriginalColor(ss){ //Tile Colors
     if (ss === "White") 
-        return "#eacead";
-    return "#442909";
+        return "whitesmoke";
+    return "rgb(41, 39, 39)";
 }
 
 function ClickMe(i,j){
@@ -87,12 +87,12 @@ function Move(Red, i, j){
         Tiles[i][j].appendChild(SelectedPiece);
         SwapPlayers();
 
-        if(Red && i == 0){  //Crown Red Piece
+        if(Red && i == 7){  //Crown Red Piece
 
             SelectedPiece.src = "../Icons/RedK.png";
             SelectedPiece.Crowned = true;
             
-        }else if(!Red && i == 7){   //Crown White Piece
+        }else if(!Red && i == 0){   //Crown White Piece
 
             SelectedPiece.src = "../Icons/WhiteK.png";
             SelectedPiece.Crowned = true;
@@ -102,13 +102,13 @@ function Move(Red, i, j){
 
 function IsDiagonal(Red, i, j) {
     
-    if(Red || SelectedPiece.Crowned){ //Red Diagonal
+    if(!Red || SelectedPiece.Crowned){ //White Diagonal
 
-        if((i === OldI - 1 && j === OldJ + 1) ||(i === OldI - 1 && j === OldJ - 1)){    //Unpromoted Red Movement
+        if((i === OldI - 1 && j === OldJ + 1) ||(i === OldI - 1 && j === OldJ - 1)){    //Unpromoted White Movement
             return true;
         }
 
-        else if (i === OldI - 2 && j === OldJ + 2){  //Unpromoted Red Eat
+        else if (i === OldI - 2 && j === OldJ + 2){  //Unpromoted White Eat
 
             if(Tiles[OldI - 1][OldJ + 1].firstChild !== null){
 
@@ -119,7 +119,7 @@ function IsDiagonal(Red, i, j) {
             }
         }
 
-        else if (i === OldI - 2 && j === OldJ - 2){  //Unpromoted Red Eat
+        else if (i === OldI - 2 && j === OldJ - 2){  //Unpromoted White Eat
 
             if(Tiles[OldI - 1][OldJ - 1].firstChild !== null){
 
@@ -131,7 +131,7 @@ function IsDiagonal(Red, i, j) {
         }
     }
 
-    if((!Red) || SelectedPiece.Crowned){  //White Diagonal
+    if((Red) || SelectedPiece.Crowned){  //White Diagonal
         if((i === OldI + 1 && j === OldJ - 1) ||(i === OldI + 1 && j === OldJ + 1)){    //Unpromoted White Movement
             return true;
         }
