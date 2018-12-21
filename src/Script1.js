@@ -91,10 +91,9 @@ function Move(Red, OldI, OldJ, i, j){
                 SwapPlayers();
             }
         }
-    }else{
+    }
         if (IsDiagonal(Red, OldI, OldJ, i, j)){ //Check  Movement
             Tiles[i][j].appendChild(SelectedPiece);
-            console.log(Red);
             if(Red && i == 7){    //Crown Red Piece
                 SelectedPiece.src = "../Icons/RedK.png";
                 SelectedPiece.Crowned = true;
@@ -106,7 +105,6 @@ function Move(Red, OldI, OldJ, i, j){
             }
             SwapPlayers();
         }
-    }
 }
 
 function IsDiagonal(Red, OldI, OldJ, i, j) {
