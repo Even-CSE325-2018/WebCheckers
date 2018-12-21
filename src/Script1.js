@@ -76,19 +76,21 @@ function ClickMe(i,j){
 function Move(Red, OldI, OldJ, i, j){
     let Eating = AnyCanEat(Red);
     let Flag = false;
+    let Flag2 = true;
     if (Eating.length != 0) {
         for (let index = 0; index < Eating.length-1; index+=2) {
             if(OldI == Eating[index] && OldJ == Eating[index+1]){
-                Tiles[OldI][OldJ].style.backgroundColor="green";
                 Flag = true;
             }   
         }
-        
     }else{
-
+        Flag = true;
+    }
+        
+    if (Flag) {
         if (IsDiagonal(Red, OldI, OldJ, i, j)){ //Check  Movement
-            
             //window.postMessage(`${i} + ${j}`);
+            Tiles[i][j].appendChild(SelectedPiece);
 
             if(Red){    //Crown Red Piece
                 if(i == 7){
@@ -102,10 +104,16 @@ function Move(Red, OldI, OldJ, i, j){
                 SelectedPiece.Crowned = true;
                 }
             }
-            
+        }
+        Eating = AnyCanEat(Red);
+        if (Eating.length == 0){
+            SwapPlayers();
+        }else{
+            for (let index = 0; index < Eating.length-1; index+=2) {
+                Tiles[Eating[index]][Eating[index+1]].style.backgroundColor = "green";
+            }
         }
     }
-    SwapPlayers();
 }
 
 function IsDiagonal(Red, OldI, OldJ, i, j) {
