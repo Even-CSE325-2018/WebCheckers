@@ -8,8 +8,14 @@ var config = {
 };
 firebase.initializeApp(config);
 
-let game = firebase.database().ref("Game/");
 
+function receiveMessage(event)
+{
+    console.log(event.data);
+}
+window.addEventListener("message", receiveMessage, false);
+
+let game = firebase.database().ref("Game/");
 
 function opponent_moves_handler(data) {
     console.log(data.ref_.key);
@@ -41,52 +47,54 @@ function my_moves_handler(data) {
 function startNewGame(opponent_moves_handler, my_moves_handler) {
     let gameKey = game.push().key;
     let gameRef = game.child(gameKey);
+
     gameRef.child("red").on("child_added", function(data) {
         opponent_moves_handler(data);
     });
+
     gameRef.child("white").on("child_added", function(data) {
         my_moves_handler(data);
     });
     return gameKey;
 }
 
-
 function joinGame(gameKey, opponent_moves_handler, my_moves_handler) {
     let gameRef = game.child(gameKey);
+
     gameRef.child("red").on("child_added", function(data) {
         my_moves_handler(data);
     });
+
     gameRef.child("white").on("child_added", function(data) {
         opponent_moves_handler(data);
     });
 }
+
 //white is boolean of whether i was white in the game
 function joinOldGame(gameKey, opponent_moves_handler, my_moves_handler, white) {
     let gameRef = game.child(gameKey);
-if(white ){
-    gameRef.child("red").on("child_added", function(data) {
-        opponent_moves_handler(data);
-    });
-    gameRef.child("white").on("child_added", function(data) {
-        my_moves_handler(data);
-    });
 
-}
-else{
-	gameRef.child("red").on("child_added", function(data) {
-        my_moves_handler(data);
-    });
-    gameRef.child("white").on("child_added", function(data) {
-        opponent_moves_handler(data);
-    });
+    if(white ){
+        gameRef.child("red").on("child_added", function(data) {
+            opponent_moves_handler(data);
+        });
+        gameRef.child("white").on("child_added", function(data) {
+            my_moves_handler(data);
+        });
 
-}
+    }else{
+        gameRef.child("red").on("child_added", function(data) {
+            my_moves_handler(data);
+        });
+        gameRef.child("white").on("child_added", function(data) {
+            opponent_moves_handler(data);
+        });
+
+    }
 }
 
 let newGameKey = startNewGame(opponent_moves_handler, my_moves_handler);
-
 console.log(newGameKey);
-
 
 //color is a small letter string
 function movePiece(oldX, oldY, newX, newY, gameKey, color){
@@ -111,4 +119,3 @@ function capturedPiece(oldX, oldY, gameKey, color){
     gameRef.child(color).set(data);
 }
 movePiece(5, 6, 8, 9, newGameKey,"red");
-

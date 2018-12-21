@@ -7,14 +7,14 @@ th{
     border: 2px solid black;
 }
 th.WhiteTile{
-    background-color: #eacead;
+    background-color: whitesmoke;
     alt: "WhiteTile";
 }
 th.WhiteTile:hover{
     filter: brightness(70%);
 }
 th.BlackTile{
-    background-color: #442909;
+    background-color: rgb(41, 39, 39);
     alt: "BlackTile";
 }
 th.BlackTile:hover{
