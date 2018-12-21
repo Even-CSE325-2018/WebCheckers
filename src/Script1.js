@@ -92,19 +92,19 @@ function Move(Red, OldI, OldJ, i, j){
             }
         }
     }
-        if (IsDiagonal(Red, OldI, OldJ, i, j)){ //Check  Movement
-            Tiles[i][j].appendChild(SelectedPiece);
-            if(Red && i == 7){    //Crown Red Piece
-                SelectedPiece.src = "../Icons/RedK.png";
-                SelectedPiece.Crowned = true;
-                
-            }
-            else if(!Red && i == 0) {      //Crown White Piece
-                SelectedPiece.src = "../Icons/WhiteK.png";
-                SelectedPiece.Crowned = true;
-            }
-            SwapPlayers();
+    if (IsDiagonal(Red, OldI, OldJ, i, j)){ //Check  Movement
+        Tiles[i][j].appendChild(SelectedPiece);
+        if(Red && i == 7){    //Crown Red Piece
+            SelectedPiece.src = "../Icons/RedK.png";
+            SelectedPiece.Crowned = true;
+            
         }
+        else if(!Red && i == 0) {      //Crown White Piece
+            SelectedPiece.src = "../Icons/WhiteK.png";
+            SelectedPiece.Crowned = true;
+        }
+        SwapPlayers();
+    }
 }
 
 function IsDiagonal(Red, OldI, OldJ, i, j) {
@@ -230,10 +230,26 @@ function EatThis(Red, i, j, OldI, OldJ) {
     }
 }
 
+function EndGame(Player) {
+    let MyPieces = WhitePieces;
+    let Winner = "White";
+    if (Player == 1) {
+        MyPieces = RedPieces;
+        Winner = "Red";
+    }
+    for (let index = 0; index < MyPieces.length; index++) {
+        if (MyPieces[index].parentNode != null) {
+            return;
+        }
+    }
+    alert(`${Winner} Wins!!`);
+}
+
 function SwapPlayers() {
     if (Player == 1) {
         Player = 2;
     }else{
         Player = 1;
     }
+    EndGame(Player);
 }
