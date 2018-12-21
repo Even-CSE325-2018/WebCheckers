@@ -11,6 +11,7 @@ MainFrame.getElementsByClassName("Sevens"),MainFrame.getElementsByClassName("Eig
 var SelectedTile = null;
 var OldI, OldJ = null;
 var SelectedPiece = null;
+var EatingPiece = null;
 var Player = 1; //Change later
 
 
@@ -73,14 +74,14 @@ function ClickMe(i,j){
     }
 }
 
-function Move(Red, OldI, OldJ, i, j){    
+function Move(Red, OldI, OldJ, i, j){
 
-    if(EatThis(Red, i, j, OldI, OldJ)){
+    if((EatThis(Red, i, j, OldI, OldJ) && EatingPiece == null) || (EatThis(Red, i, j, OldI, OldJ) && Tiles[OldI][OldJ].firstChild == EatingPiece)){
         Tiles[i][j].appendChild(SelectedPiece);
+        EatingPiece = SelectedPiece;
     }
     else{
         if (IsDiagonal(Red, OldI, OldJ, i, j)){ //Check  Movement
-            //window.postMessage(`${i} + ${j}`);
             Tiles[i][j].appendChild(SelectedPiece);
 
             if(Red){    //Crown Red Piece
@@ -97,13 +98,11 @@ function Move(Red, OldI, OldJ, i, j){
             }
         }
     }
-    Eating = AnyCanEat(Red);
-    if (Eating.length == 0){
+    if (!CanEat(Red, i, j)){
         SwapPlayers();
+        EatingPiece = null;
     }else{
-        for (let index = 0; index < Eating.length-1; index+=2) {
-            Tiles[Eating[index]][Eating[index+1]].style.backgroundColor = "green";
-        }
+
     }
 }
 
