@@ -80,12 +80,9 @@ function Move(Red, OldI, OldJ, i, j){
             Tiles[i][j].appendChild(SelectedPiece);
             if(Red && i == 7){    //Crown Red Piece
                 SelectedPiece.src = "../Icons/RedK.png";
-                SelectedPiece.Crowned = true;
-                
             }
             else if(!Red && i == 0) {      //Crown White Piece
                 SelectedPiece.src = "../Icons/WhiteK.png";
-                SelectedPiece.Crowned = true;
             }
             if(!CanEat(Red, i, j)){
                 SwapPlayers();
@@ -95,28 +92,29 @@ function Move(Red, OldI, OldJ, i, j){
     if (IsDiagonal(Red, OldI, OldJ, i, j)){ //Check  Movement
         Tiles[i][j].appendChild(SelectedPiece);
         if(Red && i == 7){    //Crown Red Piece
-            SelectedPiece.src = "../Icons/RedK.png";
-            SelectedPiece.Crowned = true;
-            
+            SelectedPiece.src = "../Icons/RedK.png";            
         }
         else if(!Red && i == 0) {      //Crown White Piece
             SelectedPiece.src = "../Icons/WhiteK.png";
-            SelectedPiece.Crowned = true;
         }
         SwapPlayers();
     }
 }
 
 function IsDiagonal(Red, OldI, OldJ, i, j) {
+    let Crowned = false;
+    if(SelectedPiece.src.substr(-5,1) === 'K'){ //Piece is Crowned
+        Crowned = true;
+    }
     
-    if(!Red || SelectedPiece.Crowned){ //White Diagonal
+    if(!Red || Crowned){ //White Diagonal
 
         if((i === OldI - 1 && j === OldJ + 1) ||(i === OldI - 1 && j === OldJ - 1)){    //Unpromoted White Movement
             return true;
         }
     }
 
-    else if(Red || SelectedPiece.Crowned){  //Red Diagonal
+    else if(Red || Crowned){  //Red Diagonal
         if ((i === OldI + 1 && j === OldJ - 1) ||(i === OldI + 1 && j === OldJ + 1)){    //Unpromoted Red Movement
             return true;
         }
@@ -126,7 +124,11 @@ function IsDiagonal(Red, OldI, OldJ, i, j) {
 }
 
 function CanEat(Red, i, j) {
-    if(!Red || Tiles[i][j].Crowned){ //White Diagonal
+    let Crowned = false;
+    if(SelectedPiece.src.substr(-5,1) === 'K'){ //Piece is Crowned
+        Crowned = true;
+    }
+    if(!Red || Crowned){ //White Diagonal
         try {
         
             if(Tiles[i - 1][j + 1].firstChild !== null){    //Unpromoted White Eat
@@ -140,7 +142,6 @@ function CanEat(Red, i, j) {
             }
         }catch{}
         try {
-        
             if(Tiles[i - 1][j - 1].firstChild !== null){   //Unpromoted White Eat
 
                 if(Tiles[i][j].className !== Tiles[i - 1][j - 1].firstChild.className){
@@ -152,9 +153,9 @@ function CanEat(Red, i, j) {
             }
         }catch{}
     }
-    if(Red || Tiles[i][j].Crowned){ //Red Diagonal
+
+    if(Red || Crowned){ //Red Diagonal
         try {
-        
             if(Tiles[i + 1][j + 1].firstChild !== null){    //Unpromoted Red Eat
 
                 if(Tiles[i][j].className !== Tiles[i + 1][j + 1].firstChild.className){
@@ -166,7 +167,6 @@ function CanEat(Red, i, j) {
             }
         }catch{}
         try {
-        
             if(Tiles[i + 1][j - 1].firstChild !== null){   //Unpromoted Red Eat
 
                 if(Tiles[i][j].className !== Tiles[i + 1][j - 1].firstChild.className){
@@ -181,7 +181,11 @@ function CanEat(Red, i, j) {
     return false;
 }
 function EatThis(Red, i, j, OldI, OldJ) {
-    if(!Red || SelectedPiece.Crowned){ //White Diagonal
+    let Crowned = false;
+    if(SelectedPiece.src.substr(-5,1) === 'K'){ //Piece is Crowned
+        Crowned = true;
+    }
+    if(!Red || Crowned){ //White Diagonal
         if (i === OldI - 2 && j === OldJ + 2){  //Unpromoted White Eat
 
             if(Tiles[OldI - 1][OldJ + 1].firstChild !== null){
@@ -204,7 +208,7 @@ function EatThis(Red, i, j, OldI, OldJ) {
             }
         }
     }
-    else if(Red || SelectedPiece.Crowned){  //Red Diagonal
+    else if(Red || Crowned){  //Red Diagonal
 
         if (i === OldI + 2 && j === OldJ + 2){  //Unpromoted Red Eat
 
