@@ -76,7 +76,7 @@ function ClickMe(i,j){
 
 function Move(Red, OldI, OldJ, i, j){
 
-    if((EatThis(Red, i, j, OldI, OldJ) && EatingPiece == null) || (EatThis(Red, i, j, OldI, OldJ) && Tiles[OldI][OldJ].firstChild == EatingPiece)){
+    if(EatThis(Red, i, j, OldI, OldJ)){
         Tiles[i][j].appendChild(SelectedPiece);
         EatingPiece = SelectedPiece;
     }
@@ -97,12 +97,6 @@ function Move(Red, OldI, OldJ, i, j){
                 }
             }
         }
-    }
-    if (!CanEat(Red, i, j)){
-        SwapPlayers();
-        EatingPiece = null;
-    }else{
-
     }
 }
 
