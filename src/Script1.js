@@ -13,6 +13,7 @@ var OldI, OldJ = null;
 var SelectedPiece = null;
 var Player = 1; //Change later
 
+
 for (let index = 0, len = RedPieces.length; index < len; index++) {     //Cursor over a piece
     WhitePieces[index].style.cursor = "pointer";
     RedPieces[index].style.cursor = "pointer";
@@ -31,8 +32,8 @@ function SelectMe(){    //Highlight selected tile
 
 function OriginalColor(ss){ //Tile Colors
     if (ss === "White") 
-        return "#eacead";
-    return "#442909";
+        return "whitesmoke";
+    return "rgb(41, 39, 39)";
 }
 
 function ClickMe(i,j){
@@ -44,11 +45,11 @@ function ClickMe(i,j){
             if (Tiles[i][j].firstChild === null) { // Tile Empty
 
                 if (SelectedPiece.className == "Red"){    // Red Moving
-                    Move(true,i,j);
+                    Move(true, OldI, OldJ, i, j);
                 }    
 
                 if (SelectedPiece.className == "White"){    // White Moving
-                    Move(false,i,j);
+                    Move(false, OldI, OldJ, i, j);
                 }
             }
         }
@@ -72,43 +73,42 @@ function ClickMe(i,j){
     }
 }
 
-function SwapPlayers() {
-    if (Player == 1) {
-        Player = 2;
-    }else{
-        Player = 1;
-    }
-}
+function Move(Red, OldI, OldJ, i, j){
 
-function Move(Red, i, j){
 
-    if (IsDiagonal(Red, i, j)){ //Check  Movement
+    if (IsDiagonal(Red, OldI, OldJ, i, j)){ //Check  Movement
 
         Tiles[i][j].appendChild(SelectedPiece);
-        SwapPlayers();
+        
+        window.postMessage(`${i} + ${j}`);
 
-        if(Red && i == 0){  //Crown Red Piece
-
-            SelectedPiece.src = "../Icons/RedK.png";
-            SelectedPiece.Crowned = true;
+        if(Red){    //Crown Red Piece
+            if(i == 7){
+                SelectedPiece.src = "../Icons/RedK.png";
+                SelectedPiece.Crowned = true;
+            }
             
-        }else if(!Red && i == 7){   //Crown White Piece
-
+        }else{      //Crown White Piece
+            if(i == 0){
             SelectedPiece.src = "../Icons/WhiteK.png";
             SelectedPiece.Crowned = true;
+            }
+        }
+        if (!AnyCanEat(Red)) {
+            SwapPlayers();
         }
     }
 }
 
-function IsDiagonal(Red, i, j) {
+function IsDiagonal(Red, OldI, OldJ, i, j) {
     
-    if(Red || SelectedPiece.Crowned){ //Red Diagonal
+    if(!Red || SelectedPiece.Crowned){ //White Diagonal
 
-        if((i === OldI - 1 && j === OldJ + 1) ||(i === OldI - 1 && j === OldJ - 1)){    //Unpromoted Red Movement
+        if((i === OldI - 1 && j === OldJ + 1) ||(i === OldI - 1 && j === OldJ - 1)){    //Unpromoted White Movement
             return true;
         }
 
-        else if (i === OldI - 2 && j === OldJ + 2){  //Unpromoted Red Eat
+        else if (i === OldI - 2 && j === OldJ + 2){  //Unpromoted White Eat
 
             if(Tiles[OldI - 1][OldJ + 1].firstChild !== null){
 
@@ -119,7 +119,7 @@ function IsDiagonal(Red, i, j) {
             }
         }
 
-        else if (i === OldI - 2 && j === OldJ - 2){  //Unpromoted Red Eat
+        else if (i === OldI - 2 && j === OldJ - 2){  //Unpromoted White Eat
 
             if(Tiles[OldI - 1][OldJ - 1].firstChild !== null){
 
@@ -131,12 +131,12 @@ function IsDiagonal(Red, i, j) {
         }
     }
 
-    if((!Red) || SelectedPiece.Crowned){  //White Diagonal
-        if((i === OldI + 1 && j === OldJ - 1) ||(i === OldI + 1 && j === OldJ + 1)){    //Unpromoted White Movement
+    if(Red || SelectedPiece.Crowned){  //Red Diagonal
+        if((i === OldI + 1 && j === OldJ - 1) ||(i === OldI + 1 && j === OldJ + 1)){    //Unpromoted Red Movement
             return true;
         }
 
-        else if (i === OldI + 2 && j === OldJ + 2){  //Unpromoted White Eat
+        else if (i === OldI + 2 && j === OldJ + 2){  //Unpromoted Red Eat
 
             if(Tiles[OldI + 1][OldJ + 1].firstChild !== null){
 
@@ -147,7 +147,7 @@ function IsDiagonal(Red, i, j) {
             }
         }
 
-        else if (i === OldI + 2 && j === OldJ - 2){  //Unpromoted White Eat
+        else if (i === OldI + 2 && j === OldJ - 2){  //Unpromoted Red Eat
 
             if(Tiles[OldI + 1][OldJ - 1].firstChild !== null){
 
@@ -160,4 +160,75 @@ function IsDiagonal(Red, i, j) {
     }
 
     return false;
+}
+
+function AnyCanEat(Color) {
+    for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++) {
+            if (Tiles[i][j].firstChild !== null) {
+                if (Tiles[i][j].firstChild.className == Color) {
+                    if(CanEat(Color, i, j)){
+                        return true;
+                    }
+                }
+            }            
+        }
+    }
+    return false;
+}
+
+function CanEat(Red, i, j) {
+    if(!Red || Tiles[i][j].Crowned){ //White Diagonal
+
+        if(Tiles[i - 1][j + 1].firstChild !== null){    //Unpromoted White Eat
+
+            if(Tiles[i][j].className !== Tiles[i - 1][j + 1].firstChild.className){
+
+                if (Tiles[i - 2][j + 2].firstChild === null) {
+                    return true;
+                }
+            }
+        }
+
+        else if(Tiles[i - 1][j - 1].firstChild !== null){   //Unpromoted White Eat
+
+            if(Tiles[i][j].className !== Tiles[i - 1][j - 1].firstChild.className){
+
+                if (Tiles[i - 2][j - 2].firstChild === null) {
+                    return true;
+                }
+            }
+        }
+    }
+    if(!Red || Tiles[i][j].Crowned){ //Red Diagonal
+
+        if(Tiles[i + 1][j + 1].firstChild !== null){    //Unpromoted Red Eat
+
+            if(Tiles[i][j].className !== Tiles[i - 1][j + 1].firstChild.className){
+
+                if (Tiles[i + 2][j + 2].firstChild === null) {
+                    return true;
+                }
+            }
+        }
+
+        else if(Tiles[i + 1][j - 1].firstChild !== null){   //Unpromoted Red Eat
+
+            if(Tiles[i][j].className !== Tiles[i - 1][j - 1].firstChild.className){
+                
+                if (Tiles[i + 2][j - 2].firstChild === null) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+function SwapPlayers() {
+    if (Player == 1) {
+        Player = 2;
+    }else{
+        Player = 1;
+    }
 }
