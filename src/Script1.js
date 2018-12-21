@@ -74,30 +74,38 @@ function ClickMe(i,j){
 }
 
 function Move(Red, OldI, OldJ, i, j){
-
-
-    if (IsDiagonal(Red, OldI, OldJ, i, j)){ //Check  Movement
-
-        Tiles[i][j].appendChild(SelectedPiece);
+    let Eating = AnyCanEat(Red);
+    let Flag = false;
+    if (Eating.length != 0) {
+        for (let index = 0; index < Eating.length-1; index+=2) {
+            if(OldI == Eating[index] && OldJ == Eating[index+1]){
+                Tiles[OldI][OldJ].style.backgroundColor="green";
+                Flag = true;
+            }   
+        }
         
-        window.postMessage(`${i} + ${j}`);
+    }else{
 
-        if(Red){    //Crown Red Piece
-            if(i == 7){
-                SelectedPiece.src = "../Icons/RedK.png";
+        if (IsDiagonal(Red, OldI, OldJ, i, j)){ //Check  Movement
+            
+            //window.postMessage(`${i} + ${j}`);
+
+            if(Red){    //Crown Red Piece
+                if(i == 7){
+                    SelectedPiece.src = "../Icons/RedK.png";
+                    SelectedPiece.Crowned = true;
+                }
+                
+            }else{      //Crown White Piece
+                if(i == 0){
+                SelectedPiece.src = "../Icons/WhiteK.png";
                 SelectedPiece.Crowned = true;
+                }
             }
             
-        }else{      //Crown White Piece
-            if(i == 0){
-            SelectedPiece.src = "../Icons/WhiteK.png";
-            SelectedPiece.Crowned = true;
-            }
-        }
-        if (!AnyCanEat(Red)) {
-            SwapPlayers();
         }
     }
+    SwapPlayers();
 }
 
 function IsDiagonal(Red, OldI, OldJ, i, j) {
@@ -162,19 +170,23 @@ function IsDiagonal(Red, OldI, OldJ, i, j) {
     return false;
 }
 
-function AnyCanEat(Color) {
+function AnyCanEat(Red) {
+    var Eating = [];
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
             if (Tiles[i][j].firstChild !== null) {
-                if (Tiles[i][j].firstChild.className == Color) {
-                    if(CanEat(Color, i, j)){
-                        return true;
+                if (Red) {
+                    if (Tiles[i][j].firstChild.className == "Red") {
+                        if(CanEat(Red, i, j)){
+                            Eating.push(i);
+                            Eating.push(j);
+                        }
                     }
                 }
             }            
         }
     }
-    return false;
+    return Eating;
 }
 
 function CanEat(Red, i, j) {
@@ -200,11 +212,11 @@ function CanEat(Red, i, j) {
             }
         }
     }
-    if(!Red || Tiles[i][j].Crowned){ //Red Diagonal
+    if(Red || Tiles[i][j].Crowned){ //Red Diagonal
 
         if(Tiles[i + 1][j + 1].firstChild !== null){    //Unpromoted Red Eat
 
-            if(Tiles[i][j].className !== Tiles[i - 1][j + 1].firstChild.className){
+            if(Tiles[i][j].className !== Tiles[i + 1][j + 1].firstChild.className){
 
                 if (Tiles[i + 2][j + 2].firstChild === null) {
                     return true;
@@ -214,7 +226,7 @@ function CanEat(Red, i, j) {
 
         else if(Tiles[i + 1][j - 1].firstChild !== null){   //Unpromoted Red Eat
 
-            if(Tiles[i][j].className !== Tiles[i - 1][j - 1].firstChild.className){
+            if(Tiles[i][j].className !== Tiles[i + 1][j - 1].firstChild.className){
                 
                 if (Tiles[i + 2][j - 2].firstChild === null) {
                     return true;
