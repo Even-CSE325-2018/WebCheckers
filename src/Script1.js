@@ -13,6 +13,7 @@ var OldI, OldJ = null;
 var SelectedPiece = null;
 var Player = 1; //Change later
 
+
 for (let index = 0, len = RedPieces.length; index < len; index++) {     //Cursor over a piece
     WhitePieces[index].style.cursor = "pointer";
     RedPieces[index].style.cursor = "pointer";
@@ -44,11 +45,11 @@ function ClickMe(i,j){
             if (Tiles[i][j].firstChild === null) { // Tile Empty
 
                 if (SelectedPiece.className == "Red"){    // Red Moving
-                    Move(true,i,j);
+                    Move(true, OldI, OldJ, i, j);
                 }    
 
                 if (SelectedPiece.className == "White"){    // White Moving
-                    Move(false,i,j);
+                    Move(false, OldI, OldJ, i, j);
                 }
             }
         }
@@ -72,43 +73,118 @@ function ClickMe(i,j){
     }
 }
 
-function SwapPlayers() {
-    if (Player == 1) {
-        Player = 2;
+function Move(Red, OldI, OldJ, i, j){
+
+    if(CanEat(Red, OldI, OldJ)){
+        if(EatThis(Red, i, j, OldI, OldJ)){
+            Tiles[i][j].appendChild(SelectedPiece);
+            if(Red && i == 7){    //Crown Red Piece
+                SelectedPiece.src = "../Icons/RedK.png";
+                SelectedPiece.Crowned = true;
+                
+            }
+            else if(!Red && i == 0) {      //Crown White Piece
+                SelectedPiece.src = "../Icons/WhiteK.png";
+                SelectedPiece.Crowned = true;
+            }
+            if(!CanEat(Red, i, j)){
+                SwapPlayers();
+            }
+        }
     }else{
-        Player = 1;
-    }
-}
-
-function Move(Red, i, j){
-
-    if (IsDiagonal(Red, i, j)){ //Check  Movement
-
-        Tiles[i][j].appendChild(SelectedPiece);
-        SwapPlayers();
-
-        if(Red && i == 7){  //Crown Red Piece
-
-            SelectedPiece.src = "../Icons/RedK.png";
-            SelectedPiece.Crowned = true;
-            
-        }else if(!Red && i == 0){   //Crown White Piece
-
-            SelectedPiece.src = "../Icons/WhiteK.png";
-            SelectedPiece.Crowned = true;
+        if (IsDiagonal(Red, OldI, OldJ, i, j)){ //Check  Movement
+            Tiles[i][j].appendChild(SelectedPiece);
+            console.log(Red);
+            if(Red && i == 7){    //Crown Red Piece
+                SelectedPiece.src = "../Icons/RedK.png";
+                SelectedPiece.Crowned = true;
+                
+            }
+            else if(!Red && i == 0) {      //Crown White Piece
+                SelectedPiece.src = "../Icons/WhiteK.png";
+                SelectedPiece.Crowned = true;
+            }
+            SwapPlayers();
         }
     }
 }
 
-function IsDiagonal(Red, i, j) {
+function IsDiagonal(Red, OldI, OldJ, i, j) {
     
     if(!Red || SelectedPiece.Crowned){ //White Diagonal
 
         if((i === OldI - 1 && j === OldJ + 1) ||(i === OldI - 1 && j === OldJ - 1)){    //Unpromoted White Movement
             return true;
         }
+    }
 
-        else if (i === OldI - 2 && j === OldJ + 2){  //Unpromoted White Eat
+    else if(Red || SelectedPiece.Crowned){  //Red Diagonal
+        if ((i === OldI + 1 && j === OldJ - 1) ||(i === OldI + 1 && j === OldJ + 1)){    //Unpromoted Red Movement
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function CanEat(Red, i, j) {
+    if(!Red || Tiles[i][j].Crowned){ //White Diagonal
+        try {
+        
+            if(Tiles[i - 1][j + 1].firstChild !== null){    //Unpromoted White Eat
+
+                if(Tiles[i][j].className !== Tiles[i - 1][j + 1].firstChild.className){
+
+                    if (Tiles[i - 2][j + 2].firstChild === null) {
+                        return true;
+                    }
+                }
+            }
+        }catch{}
+        try {
+        
+            if(Tiles[i - 1][j - 1].firstChild !== null){   //Unpromoted White Eat
+
+                if(Tiles[i][j].className !== Tiles[i - 1][j - 1].firstChild.className){
+
+                    if (Tiles[i - 2][j - 2].firstChild === null) {
+                        return true;
+                    }
+                }
+            }
+        }catch{}
+    }
+    if(Red || Tiles[i][j].Crowned){ //Red Diagonal
+        try {
+        
+            if(Tiles[i + 1][j + 1].firstChild !== null){    //Unpromoted Red Eat
+
+                if(Tiles[i][j].className !== Tiles[i + 1][j + 1].firstChild.className){
+
+                    if (Tiles[i + 2][j + 2].firstChild === null) {
+                        return true;
+                    }
+                }
+            }
+        }catch{}
+        try {
+        
+            if(Tiles[i + 1][j - 1].firstChild !== null){   //Unpromoted Red Eat
+
+                if(Tiles[i][j].className !== Tiles[i + 1][j - 1].firstChild.className){
+                    
+                    if (Tiles[i + 2][j - 2].firstChild === null) {
+                        return true;
+                    }
+                }
+            }
+        }catch{}
+    }
+    return false;
+}
+function EatThis(Red, i, j, OldI, OldJ) {
+    if(!Red || SelectedPiece.Crowned){ //White Diagonal
+        if (i === OldI - 2 && j === OldJ + 2){  //Unpromoted White Eat
 
             if(Tiles[OldI - 1][OldJ + 1].firstChild !== null){
 
@@ -130,13 +206,9 @@ function IsDiagonal(Red, i, j) {
             }
         }
     }
+    else if(Red || SelectedPiece.Crowned){  //Red Diagonal
 
-    if((Red) || SelectedPiece.Crowned){  //White Diagonal
-        if((i === OldI + 1 && j === OldJ - 1) ||(i === OldI + 1 && j === OldJ + 1)){    //Unpromoted White Movement
-            return true;
-        }
-
-        else if (i === OldI + 2 && j === OldJ + 2){  //Unpromoted White Eat
+        if (i === OldI + 2 && j === OldJ + 2){  //Unpromoted Red Eat
 
             if(Tiles[OldI + 1][OldJ + 1].firstChild !== null){
 
@@ -147,7 +219,7 @@ function IsDiagonal(Red, i, j) {
             }
         }
 
-        else if (i === OldI + 2 && j === OldJ - 2){  //Unpromoted White Eat
+        else if (i === OldI + 2 && j === OldJ - 2){  //Unpromoted Red Eat
 
             if(Tiles[OldI + 1][OldJ - 1].firstChild !== null){
 
@@ -158,6 +230,12 @@ function IsDiagonal(Red, i, j) {
             }
         }
     }
+}
 
-    return false;
+function SwapPlayers() {
+    if (Player == 1) {
+        Player = 2;
+    }else{
+        Player = 1;
+    }
 }
